@@ -14,17 +14,7 @@ class QueryController extends Controller
     {
         //拼接request中的学号密码
         $post_data = "j_username=" . $request->id . "%2Cundergraduate&j_password=" . $request->pw;
-        //初始化url
-        $ch = curl_init("http://elearning.ustb.edu.cn/choose_courses/j_spring_security_check");
-        //为了得到Cookie，设置接受header信息
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        //需要返回字符串
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        //设置需要post的数据
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-        //执行请求并将结果储存在output中
-        $output = curl_exec($ch);
-        curl_close($ch);
+        $output=Curl::getJSON("http://elearning.ustb.edu.cn/choose_courses/j_spring_security_check",$post_data,null,1);
         $outputArr = explode("\r\n", $output);
         foreach ($outputArr as $header) {
             if (strpos($header, "JSESSIONID")) {
@@ -89,6 +79,7 @@ class QueryController extends Controller
         //初始化成功时的返回信息返回信息
         $returnData = [];
         $htmlDom = Curl::getDOM("http://elearning.ustb.edu.cn/choose_courses/information/singleStuInfo_singleStuInfo_loadSingleStuScorePage.action", $this->JSEESIONID);
+        //解析dom
         $table = $htmlDom->getElementsByTagName('table');
         $table = $table->item(0);
         $mainScoreNodes = [];
@@ -131,8 +122,13 @@ class QueryController extends Controller
             'avg' => $mainScores[1],
             'scores'=>$scores
         ];
+    }
 
-            
+    public function getTimetable()
+    {
+        //验证不通过直接返回错误信息
+        if ($this->STATUS == "ERROR")
+            return array(['status' => 'error']);
         
 
     }
