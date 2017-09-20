@@ -15,8 +15,8 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 //验证密码
-$router->get('/getInfo','AuthController@getInfo');
+$router->get('/getInfo','API\QueryController@getInfo');
 //获取创新学分
-$router->get('/getInnovativeCredit','AuthController@getInnovativeCredit');
+$router->get('/getInnovativeCredit','API\QueryController@getInnovativeCredit');
 //获得所有成绩
-$router->get('/getScore','AuthController@getScore');
+$router->get('/getScore','API\QueryController@getScore');
