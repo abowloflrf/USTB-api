@@ -20,3 +20,5 @@ $router->get('/getInfo','API\QueryController@getInfo');
 $router->get('/getInnovativeCredit','API\QueryController@getInnovativeCredit');
 //获得所有成绩
 $router->get('/getScore','API\QueryController@getScore');
+//获取课表
+$router->get('/getTimetable','API\QueryController@getTimetable');

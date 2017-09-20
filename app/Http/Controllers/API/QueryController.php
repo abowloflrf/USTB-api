@@ -124,12 +124,36 @@ class QueryController extends Controller
         ];
     }
 
-    public function getTimetable()
+    public function getTimetable(Request $request)
     {
         //验证不通过直接返回错误信息
         if ($this->STATUS == "ERROR")
             return array(['status' => 'error']);
-        
-
+        //curl请求
+        $post_data = "listXnxq=" . $request->semester;
+        $output=Curl::getJSON("http://elearning.ustb.edu.cn/choose_courses/choosecourse/commonChooseCourse_courseList_loadTermCourses.action",$post_data,$this->JSEESIONID,0);
+        $output=json_decode($output);
+        $timetable=[];
+        foreach($output->selectedCourses as $course)
+        {   
+            $teachers=[];
+            if(count($course->JSM)>0)
+            {
+                foreach ($course->JSM as $teacher) {
+                    array_push($teachers,$teacher->JSM);
+                }
+            }
+            $course_info=[
+                'course_name'=>$course->KCM,
+                //多个教师名待修改
+                'teachers'=>$teachers,
+                'direct_msg'=>$course->SKSJDDSTR,
+                'capacity'=>$course->SKRS,
+                'credit'=>$course->XF,
+                'detail'=>$course->SKSJDD
+            ];
+            array_push($timetable,$course_info);
+        }
+        return $timetable;
     }
 }
