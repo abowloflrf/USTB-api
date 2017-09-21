@@ -8,7 +8,7 @@ class Course
     {
         //可能会有多个教师因此列成数组
         $teachers=[];
-        if(count($SingleCourseJSON->JSM)>0)
+        if(count($SingleCourseJSON->JSM)>=0)
         {
             foreach ($SingleCourseJSON->JSM as $teacher) {
                 array_push($teachers,$teacher->JSM);

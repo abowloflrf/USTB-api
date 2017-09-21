@@ -27,3 +27,4 @@ $router->get('/getTimetable','API\QueryController@getTimetable');
 //已获得选修课学分与成绩
 $router->get('/getElectiveScore','API\QueryController@getElectiveScore');
 //可选公选课列表
+$router->get('/getElectiveList','API\QueryController@getElectiveList');

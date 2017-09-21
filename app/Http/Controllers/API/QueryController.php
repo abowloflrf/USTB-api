@@ -167,8 +167,28 @@ class QueryController extends Controller
             'need_credit'=>(float)$output->zxf,
             'learned_courses'=>$learnedCourses
         ];
-        
-        
 
     }
+
+    public function getElectiveList()
+    {
+        //验证不通过直接返回错误信息
+        if ($this->STATUS == "ERROR")
+        return array(['status' => 'error']);
+
+        $post_data="limit=5000&start=0";
+        $output=Curl::getJSON("http://elearning.ustb.edu.cn/choose_courses/choosecourse/normalChooseCourse_normalPublicSelective_loadFormalNormalPublicSelectiveCourses.action",$post_data,$this->JSEESIONID,0);
+        $output=json_decode($output);
+        $allElectiveCourses=[];
+        foreach($output->alternativeCourses as $singleElectiveCourse)
+        {
+            array_push($allElectiveCourses,Course::Simplify($singleElectiveCourse));
+        }
+        return [
+            'status'=>'OK',
+            'course_count'=>(int)$output->totalCount,
+            'course_list'=>$allElectiveCourses
+        ];
+    }
+
 }
