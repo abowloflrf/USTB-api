@@ -20,7 +20,8 @@
             "App\\": "app/"
         },
         "files":[
-            "app/Http/Controllers/API/BaseCurl.php"
+            "app/Http/Controllers/API/BaseCurl.php",
+            "app/Http/Controllers/API/CourseHandler.php"
         ]
     },
     "autoload-dev": {

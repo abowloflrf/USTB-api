@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use \API\BaseCurl\Curl;
+use \API\CourseHandler\Course;
 
 class QueryController extends Controller
 {
@@ -136,24 +137,38 @@ class QueryController extends Controller
         $timetable=[];
         foreach($output->selectedCourses as $course)
         {   
-            $teachers=[];
-            if(count($course->JSM)>0)
-            {
-                foreach ($course->JSM as $teacher) {
-                    array_push($teachers,$teacher->JSM);
-                }
-            }
-            $course_info=[
-                'course_name'=>$course->KCM,
-                //多个教师名待修改
-                'teachers'=>$teachers,
-                'direct_msg'=>$course->SKSJDDSTR,
-                'capacity'=>$course->SKRS,
-                'credit'=>$course->XF,
-                'detail'=>$course->SKSJDD
-            ];
-            array_push($timetable,$course_info);
+            array_push($timetable,Course::Simplify($course));
         }
         return $timetable;
+    }
+    public function getElectiveScore()
+    {
+        //验证不通过直接返回错误信息
+        if ($this->STATUS == "ERROR")
+        return array(['status' => 'error']);
+
+        $post_data="limit=5000&start=0";
+        $output=Curl::getJSON("http://elearning.ustb.edu.cn/choose_courses/choosecourse/normalChooseCourse_normalPublicSelective_loadFormalNormalPublicSelectiveCourses.action",$post_data,$this->JSEESIONID,0);
+        $output=json_decode($output);
+        $learnedCourses=[];
+        $totalCredit=0;
+        foreach($output->learnedPublicCourses as $singleCourse)
+        {
+            array_push($learnedCourses,Course::PrettySimplify($singleCourse));
+            if((float)$singleCourse->GPACJ>=60)
+            {
+                $totalCredit+=(float)$singleCourse->XF;
+            }
+        }
+        
+        return [
+            'status'=>'OK',
+            'total_credit'=>$totalCredit,
+            'need_credit'=>(float)$output->zxf,
+            'learned_courses'=>$learnedCourses
+        ];
+        
+        
+
     }
 }
