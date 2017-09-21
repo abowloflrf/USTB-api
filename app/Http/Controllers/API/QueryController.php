@@ -79,9 +79,9 @@ class QueryController extends Controller
             return array(['status' => 'error']);
         //初始化成功时的返回信息返回信息
         $returnData = [];
-        $htmlDom = Curl::getDOM("http://elearning.ustb.edu.cn/choose_courses/information/singleStuInfo_singleStuInfo_loadSingleStuScorePage.action", $this->JSEESIONID);
+        $htmlDOM = Curl::getDOM("http://elearning.ustb.edu.cn/choose_courses/information/singleStuInfo_singleStuInfo_loadSingleStuScorePage.action", $this->JSEESIONID);
         //解析dom
-        $table = $htmlDom->getElementsByTagName('table');
+        $table = $htmlDOM->getElementsByTagName('table');
         $table = $table->item(0);
         $mainScoreNodes = [];
         $scores = [];//所有已出成绩详细
@@ -188,6 +188,91 @@ class QueryController extends Controller
             'status'=>'OK',
             'course_count'=>(int)$output->totalCount,
             'course_list'=>$allElectiveCourses
+        ];
+    }
+    // public function getPlan()
+    // {
+    //     //验证不通过直接返回错误信息
+    //     if ($this->STATUS == "ERROR")
+    //     return array(['status' => 'error']);
+
+    //     $htmlDOM=Curl::getDOM("http://elearning.ustb.edu.cn/choose_courses/information/singleStuInfo_singleStuInfo_loadSingleStuTeachProgramPage.action",$this->JSEESIONID);
+    //     $tables = $htmlDOM->getElementsByTagName('table');
+    //     $planLists=[];
+    //     foreach($tables as $table)
+    //     {
+    //         $planList=[];
+    //         $heads=[];
+    //         $rowNum=0;
+    //         foreach($table->childNodes as $node)
+    //         {
+                
+                
+    //             if($node->nodeName=='caption')
+    //             {
+    //                 $planList[$node->nodeValue]=[];
+    //                 $planTitle=$node->nodeValue;
+    //                 $rowNum++;
+    //             }
+                
+    //             if($node->nodeName=='thead')
+    //             {
+    //                 $tableHeads=$node->getElementsByTagName('th');
+    //                 foreach ($tableHeads as $tableHead) {
+    //                     array_push($heads,$tableHead->nodeValue);
+    //                     //$planList[$planTitle][$tableHead]=null;
+    //                 }
+    //             }
+    //             //FIXME:
+                
+    //             //这个planlist中的th数目
+    //             //$tableHeadsCount=count($heads);
+
+    //             //遍历表格内容
+    //             if($node->nodeName=='tbody')
+    //             {
+    //                 $tableRows=$node->getElementsByTagName('tr');
+    //                 foreach ($tableRows as $tableRow) {
+    //                     $index=0;
+    //                     foreach($tableRow->childNodes as $tableData)
+    //                     {
+                            
+    //                         $planList[$planTitle][$heads[$index]]=$tableData->nodeValue;
+    //                         $index++;
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         array_push($planLists,$planList);
+    //     }
+    //     return $planLists;
+    // }
+    public function getLogs(Request $request)
+    {
+        //验证不通过直接返回错误信息
+        if ($this->STATUS == "ERROR")
+        return array(['status' => 'error']);
+
+        $post_data="listXnxq=".$request->semester;
+        $output=Curl::getJSON("http://elearning.ustb.edu.cn/choose_courses/choosecourse/commonChooseCourse_courseList_loadSkxsbLogs.action",$post_data,$this->JSEESIONID,0);
+        $output=json_decode($output);
+
+        $coureseLogs=[];
+        foreach($output->skxsbLogs as $course)
+        {
+            $log=[
+                'course_name'=>$course->DYKCM,
+                'log'=>$course->XGYY,
+                'course_type'=>$course->XKFS,
+                'time'=>$course->CZSJ,
+                'who'=>$course->CZR_ID
+            ];
+            array_push($coureseLogs,$log);
+        }
+        
+        return [
+            'status'=>'OK',
+            'logs'=>$coureseLogs
         ];
     }
 
