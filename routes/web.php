@@ -31,7 +31,7 @@ $router->get('/getElectiveScore','API\QueryController@getElectiveScore');
 //可选公选课列表
 $router->get('/getElectiveList','API\QueryController@getElectiveList');
 //学期已选课程http://elearning.ustb.edu.cn/choose_courses/choosecourse/commonChooseCourse_courseList_loadTermCourses.action?listXnxq:2017-2018-1
-
+$router->get('/getSelectedCourses','API\QueryController@getSelectedCourses');
 //输出php环境
 $router->get('/phpinfo',function(){
     echo phpinfo();

@@ -276,4 +276,28 @@ class QueryController extends Controller
         ];
     }
 
+    public function getSelectedCourses(Request $request)
+    {
+        //验证不通过直接返回错误信息
+        if ($this->STATUS == "ERROR")
+        return array(['status' => 'error']);
+
+        $post_data="listXnxq=".$request->semester;
+        $output=Curl::getJSON("http://elearning.ustb.edu.cn/choose_courses/choosecourse/commonChooseCourse_courseList_loadTermCourses.action",$post_data,$this->JSEESIONID,0);
+        $output=json_decode($output);
+        $selectedCourses=[];
+        foreach($output->selectedCourses as $course)
+        {
+            $courseInfo=[
+                'course_name'=>$course->KCM,
+                'detail'=>$course->SKSJDDSTR
+            ];
+            array_push($selectedCourses,$courseInfo);
+        }
+        return [
+            'status'=>'OK',
+            'selected_courses'=>$selectedCourses
+        ];
+    }
+
 }
