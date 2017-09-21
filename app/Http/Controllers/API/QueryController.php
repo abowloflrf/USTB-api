@@ -139,7 +139,10 @@ class QueryController extends Controller
         {   
             array_push($timetable,Course::Simplify($course));
         }
-        return $timetable;
+        return [
+            'status'=>'OK',
+            'timetable'=>$timetable
+        ];
     }
     public function getElectiveScore()
     {
