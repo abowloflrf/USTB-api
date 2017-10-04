@@ -23,7 +23,7 @@
 ```
 
 ### 查询所有成绩
-- `/getInnovativeCredit`
+- `/getScore`
 
 - 查询参数`?id=学号&pw=密码`
 
